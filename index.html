@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Pokémon Battle Master Lite：離線快照資料的寶可夢與招式圖鑑、組隊及屬性分析。">
+  <title>Pokémon Battle Master · Lite</title>
+  <link rel="icon" type="image/png" href="./assets/logo.png">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header class="topbar">
+  <div class="top-inner">
+    <a class="brand" href="#home" aria-label="Pokémon Battle Master Lite 首頁"><img src="./assets/logo.png" alt=""><span>POKÉMON<br><strong>BATTLE MASTER</strong></span><em>LITE</em></a>
+    <nav class="nav" aria-label="主選單">
+      <a href="#home" data-nav="home">總覽</a><a href="#pokemon" data-nav="pokemon">寶可夢圖鑑</a><a href="#moves" data-nav="moves">招式圖鑑</a><a href="#team" data-nav="team">隊伍編輯</a><a href="#types" data-nav="types">屬性分析</a>
+    </nav>
+    <span class="site-tag"><span class="live-dot"></span> STATIC EDITION</span>
+  </div>
+</header>
+<main class="site-main" id="main"><div id="app" class="loading-shell" role="status">正在載入本機資料快照…</div></main>
+<footer class="site-footer"><div><strong>POKÉMON BATTLE MASTER <span>LITE</span></strong><p>非官方粉絲製作的靜態體驗版。角色、名稱與圖像權利屬其各自權利人；資料來自使用者提供的封存快照。</p></div><span>不連接後端 · 無帳號 · 隊伍儲存於本機瀏覽器</span></footer>
+<dialog id="modal" class="dialog" aria-label="寶可夢詳細資訊"><div class="dialog-body" id="modal-body"></div></dialog>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
