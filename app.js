@@ -12,7 +12,7 @@
   const badges=p=>(p.type||[]).map(type=>`<span class="type-badge" style="--type-color:${TYPE_MAP[type]?.color||'#67768c'}">${safe(TYPE_MAP[type]?.name||type)}</span>`).join('');
   const NAMES=['HP','攻擊','防禦','特攻','特防','速度'];
   let team=Array(6).fill(null),view='home';
-  let dex={query:'',type:'',form:'',page:1},moves={query:'',type:'',category:'',page:1};
+  let dex={query:'',type:'',form:'',page:1},moves={query:'',type:'',category:'',page:1},items={query:'',category:'',page:1};
   let atkType='fire',defType='grass',defType2='';
   const storeKey='pbm-lite-team-v1';
   let toastTimer;
@@ -32,7 +32,7 @@
   function home(){
     const featured=[6,25,150,384,392].map(n=>DATA.forms.find(p=>p.num===n&&p.default)).filter(Boolean);
     app.innerHTML=`<section class="hero"><div class="hero-text"><p class="eyebrow">POKÉMON BATTLE MASTER / STATIC EDITION</p><h1>掌握每一筆資料，<br><b>讓對戰更有方向。</b></h1><p>以你原本的寶可夢對戰大師為基礎，擷取繁體中文資料快照，打造不依賴伺服器的圖鑑、招式、組隊和屬性分析工具。</p><div class="hero-actions"><a class="btn primary" href="#pokemon">探索寶可夢圖鑑 ↗</a><a class="btn ghost" href="#team">開始建立隊伍</a></div></div><div class="hero-card"><small>ARCHIVED FORM SNAPSHOT</small><strong>${nf.format(DATA.forms.length)}</strong><div class="subtle">可瀏覽寶可夢型態</div><div class="stats-row"><div><b>${nf.format(DATA.moves.length)}</b><span>招式記錄</span></div><div><b>${nf.format(DATA.items.length)}</b><span>對戰道具</span></div></div><div class="hero-note">※ 此為靜態精簡版：資料不即時更新，不包含原版後端或完整合法性判定。</div></div></section>
-    <section class="section"><div class="section-heading"><div><p class="eyebrow">MASTER TOOLS</p><h2>選擇你的探索方式</h2></div><span>所有工具都在瀏覽器端運作</span></div><div class="feature-grid">${feature('pokemon','DEX','寶可夢圖鑑','搜尋繁體中文名稱、英文名稱與全國圖鑑編號，檢視型態、屬性及種族值。')}${feature('moves','MOV','招式圖鑑','依名稱、屬性與招式分類搜尋，查詢威力、命中率與效果。')}${feature('team','6 ×','隊伍編輯','選擇六名成員、招式與道具，儲存在自己的瀏覽器。')}${feature('types','18 ×','屬性分析','檢查屬性相剋，找出組隊防守的弱點。')}</div></section>
+    <section class="section"><div class="section-heading"><div><p class="eyebrow">MASTER TOOLS</p><h2>選擇你的探索方式</h2></div><span>所有工具都在瀏覽器端運作</span></div><div class="feature-grid">${feature('pokemon','DEX','寶可夢圖鑑','搜尋繁體中文名稱、英文名稱與全國圖鑑編號，檢視型態、屬性及種族值。')}${feature('moves','MOV','招式圖鑑','依名稱、屬性與招式分類搜尋，查詢威力、命中率與效果。')}${feature('items','ITM','道具圖鑑','依名稱、英文名稱或分類搜尋封存資料中的 488 筆道具。')}${feature('team','6 ×','隊伍編輯','選擇六名成員、招式與道具，儲存在自己的瀏覽器。')}${feature('types','18 ×','屬性分析','檢查屬性相剋，找出組隊防守的弱點。')}</div></section>
     <section class="section"><div class="section-heading"><div><p class="eyebrow">START EXPLORING</p><h2>經典寶可夢</h2></div><span>點擊查看詳細資料</span></div><div class="mini-gallery">${featured.map(p=>`<button class="mini-pokemon" data-detail="${p.id}"><div>${icon(p)}</div><b>${safe(p.name)}</b><small>#${String(p.num).padStart(4,'0')} · ${safe(p.en)}</small></button>`).join('')}</div></section>
     <div class="info-line callout"><b>關於這個版本：</b>這是由正式版資料庫擷取的展示用快照；與原版的 V2 Current Snapshot、合法性判斷及伺服器即時功能不同。隊伍不會上傳到伺服器，網頁公開後訪客的資料也只留在各自的瀏覽器。</div>`;
   }
@@ -62,6 +62,32 @@
     $('#move-count').textContent=`符合 ${nf.format(m.length)} 個招式 · 第 ${moves.page} / ${total} 頁`;
     $('#move-rows').innerHTML=m.length?m.slice((moves.page-1)*size,moves.page*size).map(x=>`<tr><td class="move-name"><b>${safe(x.name)}</b><small>${safe(x.en)}</small></td><td><span class="type-badge" style="--type-color:${TYPE_MAP[x.type]?.color||'#657'}">${safe(TYPE_MAP[x.type]?.name||'—')}</span></td><td><span class="pill">${categoryName(x.category)}</span></td><td><b>${x.power??'—'}</b></td><td>${x.accuracy??'—'}</td><td>${x.pp??'—'}</td><td class="move-info">${safe(x.effect||'未提供效果說明')}</td></tr>`).join(''):'<tr><td colspan="7" class="empty">找不到符合條件的招式。</td></tr>';
     $('#move-pager').innerHTML=`<button data-move-page="${moves.page-1}" ${moves.page<=1?'disabled':''}>← 上一頁</button><span>${moves.page} / ${total}</span><button data-move-page="${moves.page+1}" ${moves.page>=total?'disabled':''}>下一頁 →</button>`;
+  }
+  // 新增視圖示範：依 AGENTS.md 第 7、9 節擴充「道具圖鑑」。
+  const itemCategoryLabels={
+    'held-item':'攜帶道具','mega-stone':'超級石','berry':'樹果',
+    'non-held-berry':'其他樹果','key-item':'重要道具',
+    'z-crystal-generic':'通用 Z 純晶','z-crystal-species':'專屬 Z 純晶',
+    'type-boost-item':'屬性強化道具'
+  };
+  function itemCategoryName(key){return itemCategoryLabels[key]||key||'未分類';}
+  function itemsPage(){
+    const categories=[...new Set(DATA.items.map(x=>x.category).filter(Boolean))].sort((a,b)=>itemCategoryName(a).localeCompare(itemCategoryName(b),'zh-TW'));
+    app.innerHTML=pageHeader('ITEM CATALOG / ARCHIVE','道具圖鑑','查詢封存快照中的道具名稱、英文名稱及資料分類；原始資料未包含完整道具效果。',`<span class="count-pill">${nf.format(DATA.items.length)} 筆道具</span>`)+
+      `<div class="filters"><div class="field search"><label for="item-q">搜尋名稱／編號</label><input id="item-q" placeholder="例：吃剩的東西、Leftovers、1" value="${safe(items.query)}"></div><div class="field"><label for="item-category">道具分類</label><select id="item-category"><option value="">全部分類</option>${categories.map(key=>`<option value="${safe(key)}" ${items.category===key?'selected':''}>${safe(itemCategoryName(key))}</option>`).join('')}</select></div><button class="btn" id="item-reset" type="button">清除篩選</button></div><p class="result-note" id="item-count"></p><div class="table-scroll"><table class="move-table"><thead><tr><th>ID</th><th>名稱</th><th>分類</th><th>資料備註</th></tr></thead><tbody id="item-rows"></tbody></table></div><div class="pager" id="item-pager"></div><div class="info-line callout"><b>資料範圍：</b>本圖鑑只顯示快照實際提供的名稱與分類。未包含道具效果與合法性判定，不推測缺漏資料。</div>`;
+    $('#item-q').addEventListener('input',e=>{items.query=e.target.value;items.page=1;renderItems();});
+    $('#item-category').addEventListener('change',e=>{items.category=e.target.value;items.page=1;renderItems();});
+    $('#item-reset').addEventListener('click',()=>{items={query:'',category:'',page:1};itemsPage();});
+    renderItems();
+  }
+  function renderItems(){
+    const q=items.query.trim().toLocaleLowerCase();
+    const matches=DATA.items.filter(x=>(!items.category||x.category===items.category)&&(!q||[x.name,x.en,String(x.id)].some(v=>String(v||'').toLocaleLowerCase().includes(q))));
+    const size=24,total=Math.max(1,Math.ceil(matches.length/size));
+    items.page=Math.max(1,Math.min(items.page,total));
+    $('#item-count').textContent=`符合 ${nf.format(matches.length)} 筆道具 · 第 ${items.page} / ${total} 頁`;
+    $('#item-rows').innerHTML=matches.length?matches.slice((items.page-1)*size,items.page*size).map(x=>`<tr><td>${nf.format(x.id)}</td><td class="move-name"><b>${safe(x.name)}</b><small>${safe(x.en||'未提供英文名稱')}</small></td><td><span class="pill">${safe(itemCategoryName(x.category))}</span></td><td class="move-info">未提供效果資料</td></tr>`).join(''):'<tr><td colspan="4" class="empty">找不到符合條件的道具。</td></tr>';
+    $('#item-pager').innerHTML=`<button data-item-page="${items.page-1}" ${items.page<=1?'disabled':''}>← 上一頁</button><span>${items.page} / ${total}</span><button data-item-page="${items.page+1}" ${items.page>=total?'disabled':''}>下一頁 →</button>`;
   }
   function openModal(html){modalBody.innerHTML=html;if(!modal.open)modal.showModal();}
   function closeModal(){if(modal.open)modal.close();}
@@ -98,14 +124,15 @@
     renderType();
   }
   function renderType(){const targets=[defType,defType2].filter(Boolean);const multi=effectAgainst(atkType,targets);const atk=TYPE_MAP[atkType]?.name||atkType;const defs=targets.map(t=>TYPE_MAP[t]?.name||t).join(' ＋ ');const msg=multi===0?'完全無效':multi<1?'效果不理想':multi===1?'一般效果':'效果絕佳';$('#type-effect').innerHTML=`<div class="effect-big"><strong>${multi}×</strong><span><b>${safe(atk)} → ${safe(defs)}</b><br>${msg}<br>這是屬性倍率，不是實際傷害數字。</span></div>`;$('#type-matrix').innerHTML=DATA.types.map(t=>{const m=effectAgainst(t.key,targets);return `<div class="type-list-item"><span class="type-badge" style="--type-color:${t.color}">${safe(t.name)}</span><b style="color:${m>1?'#ff929c':m<1?'#65d4b7':'#dbe3f0'}">${m}×</b></div>`}).join('');}
-  function render(){view=location.hash.slice(1).split('/')[0]||'home';if(!['home','pokemon','moves','team','types'].includes(view))view='home';updateNav();if(view==='home')home();if(view==='pokemon')pokemon();if(view==='moves')movePage();if(view==='team')teamPage();if(view==='types')typePage();window.scrollTo(0,0);}
+  function render(){view=location.hash.slice(1).split('/')[0]||'home';if(!['home','pokemon','moves','items','team','types'].includes(view))view='home';updateNav();if(view==='home')home();if(view==='pokemon')pokemon();if(view==='moves')movePage();if(view==='items')itemsPage();if(view==='team')teamPage();if(view==='types')typePage();window.scrollTo(0,0);}
   document.addEventListener('click',e=>{
-    const x=e.target.closest('[data-detail],[data-add],[data-close],[data-poke-page],[data-move-page],[data-pick],[data-choose],[data-slot],[data-edit],[data-remove]');if(!x)return;
+    const x=e.target.closest('[data-detail],[data-add],[data-close],[data-poke-page],[data-move-page],[data-item-page],[data-pick],[data-choose],[data-slot],[data-edit],[data-remove]');if(!x)return;
     if(x.hasAttribute('data-detail'))detail(Number(x.dataset.detail));
     if(x.hasAttribute('data-add'))addToTeam(Number(x.dataset.add));
     if(x.hasAttribute('data-close'))closeModal();
     if(x.hasAttribute('data-poke-page')){dex.page=Number(x.dataset.pokePage);renderPokemonResults();window.scrollTo(0,150);}
     if(x.hasAttribute('data-move-page')){moves.page=Number(x.dataset.movePage);renderMoves();window.scrollTo(0,150);}
+    if(x.hasAttribute('data-item-page')){items.page=Number(x.dataset.itemPage);renderItems();window.scrollTo(0,150);}
     if(x.hasAttribute('data-pick'))openPicker(Number(x.dataset.pick));
     if(x.hasAttribute('data-choose'))addToTeam(Number(x.dataset.choose),Number(x.dataset.slot));
     if(x.hasAttribute('data-edit'))openEdit(Number(x.dataset.edit));
