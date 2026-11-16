@@ -6,6 +6,7 @@
 
 - 寶可夢圖鑑：共 1,458 筆繁體中文型態記錄，支援中文／英文／編號、屬性與型態篩選，檢視種族值、特性。
 - 招式圖鑑：937 筆招式（含資料狀態為 NotApplicable 的歷史招式），提供類別、威力、命中、PP 與效果說明。
+- 道具圖鑑：488 筆道具，提供繁體中文／英文名稱、ID 與類別搜尋；封存資料未包含完整效果，故不顯示推測效果。
 - 六人隊伍編輯：自由配置隊伍、特性、道具、性格及最多四個招式；瀏覽器 LocalStorage 儲存與 JSON 匯入／匯出。
 - 屬性分析：使用資料庫中「第六世代以後」18×18 屬性相剋表，估算招式屬性對單／雙屬性防守的倍率，以及隊伍弱點。
 
@@ -30,3 +31,13 @@
 - 資料：使用者提供的正式版 SQLite 資料庫，精選 `CurrentSnapshots`、`Moves`、`Items`、`Natures`、`Types` 及 `TypeEffectiveness` 欄位。
 - Logo：使用者提供的 G 版 `web/public/battle-master-icon-small.png`。
 - 網頁風格：參考使用者 GitHub 的 Pokémon Battle Master V2 前端深灰及紅色主題，重新以原生 HTML/CSS/JS 製作。
+
+## AGENTS.md 與可重複擴充實例
+
+專案的開發規範詳見 [AGENTS.md](AGENTS.md)，包括網站目的、深灰紅色設計、SPA hash 路由、資料欄位、命名方式、AI 新增功能的步驟與驗收標準。
+
+本次實際要求 AI 依規範增加「道具圖鑑」視圖（`#items`），重用既有 `data/catalog.json` 內的 `items[]` 和表格樣式，完成搜尋、分類、清除條件及分頁。只修改 `index.html` 的主選單、`app.js` 的視圖與導覽、`README.md` 的說明，**沒有重新設計網站，也沒有新增後端或變更資料格式**。
+
+- GitHub Repository：<https://github.com/Polarishunter/PokemonBattleMaster-Lite>
+- 公開網站：<https://polarishunter.github.io/PokemonBattleMaster-Lite/>
+- 道具圖鑑：<https://polarishunter.github.io/PokemonBattleMaster-Lite/#items>
